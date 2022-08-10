@@ -1,5 +1,5 @@
-import { SafeAreaView, FlatList, StyleSheet, View, Pressable } from 'react-native';
-import React from 'react';
+import { SafeAreaView, FlatList, StyleSheet, View, Pressable, TextInput } from 'react-native';
+import React, { useState } from 'react';
 import Text from '../components/text/text';
 import PlanetHeader from '../components/plannet-header';
 import { colors } from '../theme/color';
@@ -29,18 +29,37 @@ const PlanetItem = ({item}) => {
 
 
 export default function Home() {
-      const renderItem = ({ item }) => {
-            return (
-              <PlanetItem item={item}></PlanetItem>    
-            );
-      }
-      
+const [list, setList] = useState(PLANET_LIST);
+
+const renderItem = ({ item }) => {
+      return (
+            <PlanetItem item={item}></PlanetItem>    
+      );
+}
+
+const searchFilter = (text) => {
+      const filteredList = PLANET_LIST.filter(item => {
+            const itemName = item.name.toLowerCase();
+            const userTypedText = text.toLowerCase();
+
+            return itemName.indexOf(userTypedText) > -1;
+      })
+      setList(filteredList)
+}
   return (
     <SafeAreaView style={styles.container}>
       <PlanetHeader/>
+      <TextInput 
+            placeholder="Type The Planet Name"
+            placeholderTextColor={colors.white}
+            autoCorrect={false}
+            style={styles.searchInput}
+            onChangeText={ (text) => searchFilter(text)}
+      />
       <FlatList
             contentContainerStyle={styles.list}
-            data={PLANET_LIST}
+            // data={PLANET_LIST}
+            data={list}
             keyExtractor={( item ) => item.name}
             renderItem={renderItem}
             ItemSeparatorComponent={ () => <View style={styles.separator}></View>}
@@ -77,6 +96,13 @@ const styles = StyleSheet.create({
             borderBottomColor: colors.white,
             borderBottomWidth: 0.5
       },
+      searchInput: {
+            padding: spacing[4],
+            color: colors.white,
+            borderBottomColor: colors.white,
+            borderBottomWidth: 1,
+            margin: spacing[5]
+      }
 })
 
 
